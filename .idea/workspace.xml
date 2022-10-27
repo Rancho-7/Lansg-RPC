@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="80f6c167-8f4a-4349-a079-6c355d59c4a8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/docs/chapter1-rpc最简单的实现.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-api/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-api/src/main/java/com/lansg/rpc/api/HelloObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-api/src/main/java/com/lansg/rpc/api/HelloService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-common/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-common/src/main/java/com/lansg/rpc/entity/RpcRequestBean.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-common/src/main/java/com/lansg/rpc/entity/RpcResponseBean.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-common/src/main/java/com/lansg/rpc/enumeration/ResponseCode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-core/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-consumer/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-consumer/src/main/java/com/lansg/test/HelloServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-consumer/src/main/resources/log4j.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-provider/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="E:\Environment\maven\apache-maven-3.8.1\maven-repo" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../Environment/maven/apache-maven-3.8.1" />
+        <option name="userSettingsFile" value="E:\Environment\maven\apache-maven-3.8.1\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2GhYCQn11CdgxXj3ZzQACu7ke5G" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.38729018" />
+    <property name="settings.editor.selected.configurable" value="editing.templates" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="80f6c167-8f4a-4349-a079-6c355d59c4a8" name="Changes" comment="" />
+      <created>1666842155534</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1666842155534</updated>
+      <workItem from="1666842157280" duration="37000" />
+      <workItem from="1666842253670" duration="1096000" />
+      <workItem from="1666854160930" duration="11763000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+</project>
