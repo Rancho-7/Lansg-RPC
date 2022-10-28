@@ -5,19 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="80f6c167-8f4a-4349-a079-6c355d59c4a8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/docs/chapter1-rpc最简单的实现.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-api/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-api/src/main/java/com/lansg/rpc/api/HelloObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-api/src/main/java/com/lansg/rpc/api/HelloService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-common/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-common/src/main/java/com/lansg/rpc/entity/RpcRequestBean.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-common/src/main/java/com/lansg/rpc/entity/RpcResponseBean.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-common/src/main/java/com/lansg/rpc/enumeration/ResponseCode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rpc-core/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test-consumer/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test-consumer/src/main/java/com/lansg/test/HelloServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test-consumer/src/main/resources/log4j.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test-provider/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-core/src/main/java/com/lansg/rpc/consumer/RpcConsumer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-core/src/main/java/com/lansg/rpc/consumer/RpcConsumerProxy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-core/src/main/java/com/lansg/rpc/provider/RpcProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rpc-core/src/main/java/com/lansg/rpc/provider/WorkerThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-consumer/src/main/java/com/lansg/test/TestConsumer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-provider/src/main/java/HelloServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-provider/src/main/java/TestProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rpc-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/rpc-core/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-consumer/src/main/java/com/lansg/test/HelloServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-provider/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/test-provider/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +31,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -70,7 +75,10 @@
       <updated>1666842155534</updated>
       <workItem from="1666842157280" duration="37000" />
       <workItem from="1666842253670" duration="1096000" />
-      <workItem from="1666854160930" duration="11763000" />
+      <workItem from="1666854160930" duration="11944000" />
+      <workItem from="1666881896945" duration="524000" />
+      <workItem from="1666950564225" duration="1129000" />
+      <workItem from="1666970967795" duration="1575000" />
     </task>
     <servers />
   </component>
