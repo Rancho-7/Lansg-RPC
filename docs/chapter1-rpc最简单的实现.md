@@ -162,7 +162,7 @@ public class RpcConsumer {
 
 这里使用的是try-catch的一种try-with-resources 的用法，称为 ARM (Automatic Resource Management) 自动资源管理。正常try-catch的用法中，我们使用完资源后，需要在finally中手动对资源进行关闭，但是在我们使用类似`try (Socket socket=new Socket(host,port))`后，数据流会在 try 执行完毕后自动被关闭，前提是**这些可关闭的资源必须实现 java.lang.AutoCloseable 接口**。下文出现的try（）同理。
 
-![image-20221031170513012](E:/Blog/lansg/source/img/image-20221031170513012.png)
+![ch1.1](./img/ch1.1.png)
 
 
 
@@ -261,6 +261,6 @@ public class TestConsumer {
 
 先启动服务端，再启动客户端，得到结果如下：
 
-![image-20221029180307423](E:/Blog/lansg/source/img/image-20221029180307423.png)
+![ch1.2](./img/ch1.2.png)
 
-![image-20221029180321513](E:/Blog/lansg/source/img/image-20221029180321513.png)
+![ch1.3](./img/ch1.3.png)
