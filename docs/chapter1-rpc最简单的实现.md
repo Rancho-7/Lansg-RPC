@@ -44,6 +44,8 @@ public class HelloServiceImpl implements HelloService {
 }
 ```
 
+HelloService是通用的接口，provider端的HelloServiceImpl实现类是真正的服务。**一个实现类可以实现多个通用接口，一个通用接口也可以在provider端有多个实现类。**
+
 
 
 #### 传输协议
@@ -201,7 +203,7 @@ public class RpcProvider {
 }
 ```
 
-WorkerThread表示工作线程，它实现了Runnable接口，用于接收`RpcRequestBean`对象，解析并且调用，生成`RpcResponseBean`对象并传输回去。
+WorkerThread表示工作线程，它实现了Runnable接口，用于接收`RpcRequestBean`对象，解析并且调用，生成`RpcResponseBean`对象并传输回去。这里通过反射进行调用，只需要方法名和参数类型就可以获得Method对象，然后通过invoke（）方法，传入接口名称和参数列表实现方法的调用。
 
 ```java
 @Slf4j
@@ -229,6 +231,8 @@ public class WorkerThread implements Runnable{
     }
 }
 ```
+
+
 
 #### 测试
 
