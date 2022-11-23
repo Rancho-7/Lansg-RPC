@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 * @author: Lansg
 * @date: 2022/11/22 20:24
 * @Description: Netty中处理RpcRequest的Handler
+ *  自定义的Handler需要继承Netty规定好的HandlerAdapter
+ *  才能被Netty框架所关联，有点类似SpringMVC的适配器模式
 */
 @Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequestBean> {

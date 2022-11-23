@@ -6,6 +6,7 @@ import com.lansg.rpc.codec.CommonEncoder;
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
 import com.lansg.rpc.serializer.JsonSerializer;
+import com.lansg.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -35,16 +36,22 @@ public class NettyClient implements RpcConsumer {
 
     static {
         EventLoopGroup group = new NioEventLoopGroup();
+        //创建bootstrap对象，配置参数
         bootstrap = new Bootstrap();
+        //设置线程组
         bootstrap.group(group)
+                //设置客户端的通道实现类型
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
+                //初始化通道
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        //添加客户端通道的处理器
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new CommonDecoder())
-                                .addLast(new CommonEncoder(new JsonSerializer()))
+//                                .addLast(new CommonEncoder(new JsonSerializer()))
+                                .addLast(new CommonEncoder(new KryoSerializer()))
                                 .addLast(new NettyClientHandler());
                     }
                 });
@@ -53,7 +60,7 @@ public class NettyClient implements RpcConsumer {
     @Override
     public Object sendRequest(RpcRequestBean rpcRequest) {
         try {
-
+            //连接服务端
             ChannelFuture future = bootstrap.connect(host, port).sync();
             log.info("客户端连接到服务器 {}:{}", host, port);
             Channel channel = future.channel();
@@ -65,6 +72,7 @@ public class NettyClient implements RpcConsumer {
                         log.error("发送消息时有错误发生: ", future1.cause());
                     }
                 });
+                //对通道关闭进行监听
                 channel.closeFuture().sync();
                 AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse");
                 RpcResponseBean rpcResponse = channel.attr(key).get();
