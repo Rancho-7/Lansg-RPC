@@ -1,7 +1,9 @@
 package com.lansg.rpc.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -10,7 +12,8 @@ import java.io.Serializable;
 * @date: 2022/10/27 20:16
 */
 @Data
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RpcRequestBean implements Serializable {
     //待调用接口名称
     private String interfaceName;

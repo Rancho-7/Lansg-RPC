@@ -2,6 +2,7 @@ package com.lansg.rpc.entity;
 
 import com.lansg.rpc.enumeration.ResponseCode;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 * @date: 2022/10/27 20:21
 */
 @Data
+@NoArgsConstructor
 public class RpcResponseBean<T> implements Serializable {
     //响应状态码
     private Integer code;

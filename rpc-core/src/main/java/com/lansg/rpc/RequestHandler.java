@@ -1,4 +1,4 @@
-package com.lansg.rpc.provider;
+package com.lansg.rpc;
 
 
 import com.lansg.rpc.entity.RpcRequestBean;

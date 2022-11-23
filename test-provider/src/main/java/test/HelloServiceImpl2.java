@@ -1,3 +1,5 @@
+package test;
+
 import com.lansg.rpc.api.HelloObject;
 import com.lansg.rpc.api.HelloService;
 import com.lansg.rpc.api.HelloService2;
