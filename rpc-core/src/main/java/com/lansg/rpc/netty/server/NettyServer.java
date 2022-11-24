@@ -3,6 +3,7 @@ package com.lansg.rpc.netty.server;
 import com.lansg.rpc.RpcProvider;
 import com.lansg.rpc.codec.CommonDecoder;
 import com.lansg.rpc.codec.CommonEncoder;
+import com.lansg.rpc.serializer.HessianSerializer;
 import com.lansg.rpc.serializer.JsonSerializer;
 import com.lansg.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
@@ -46,7 +47,8 @@ public class NettyServer implements RpcProvider {
                             //给pipeline管道设置处理器
                             ChannelPipeline pipeline = ch.pipeline();
 //                            pipeline.addLast(new CommonEncoder(new JsonSerializer()));
-                            pipeline.addLast(new CommonEncoder(new KryoSerializer()));
+//                            pipeline.addLast(new CommonEncoder(new KryoSerializer()));
+                            pipeline.addLast(new CommonEncoder(new HessianSerializer()));
                             pipeline.addLast(new CommonDecoder());
                             pipeline.addLast(new NettyServerHandler());
                         }
