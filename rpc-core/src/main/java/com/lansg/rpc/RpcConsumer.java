@@ -1,6 +1,7 @@
 package com.lansg.rpc;
 
 import com.lansg.rpc.entity.RpcRequestBean;
+import com.lansg.rpc.serializer.CommonSerializer;
 
 /**
 * @author: Lansg
@@ -8,5 +9,9 @@ import com.lansg.rpc.entity.RpcRequestBean;
 * @Description: 客户端类通用接口
 */
 public interface RpcConsumer {
+
     Object sendRequest(RpcRequestBean rpcRequest);
+
+    void setSerializer(CommonSerializer serializer);
+
 }

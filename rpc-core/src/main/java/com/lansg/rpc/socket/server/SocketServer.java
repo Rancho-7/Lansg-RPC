@@ -2,7 +2,10 @@ package com.lansg.rpc.socket.server;
 
 import com.lansg.rpc.RequestHandler;
 import com.lansg.rpc.RpcProvider;
+import com.lansg.rpc.enumeration.RpcError;
+import com.lansg.rpc.exception.RpcException;
 import com.lansg.rpc.registry.ServiceRegistry;
+import com.lansg.rpc.serializer.CommonSerializer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -24,6 +27,7 @@ public class SocketServer implements RpcProvider {
     private final ExecutorService threadPool;
     private RequestHandler requestHandler = new RequestHandler();
     private final ServiceRegistry serviceRegistry;
+    private CommonSerializer serializer;
 
     public SocketServer(ServiceRegistry serviceRegistry){
         this.serviceRegistry = serviceRegistry;
@@ -36,15 +40,24 @@ public class SocketServer implements RpcProvider {
     @Override
     public void start(int port){
         try (ServerSocket serverSocket=new ServerSocket(port)){
+            if(serializer == null) {
+                log.error("未设置序列化器");
+                throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+            }
             log.info("服务器启动...");
             Socket socket;
             while ((socket = serverSocket.accept())!=null){
                 log.info("消费者连接: {}:{}", socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry,serializer));
             }
             threadPool.shutdown();
         }catch (IOException e){
             log.info("服务器启动时有错误发生:",e);
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer=serializer;
     }
 }

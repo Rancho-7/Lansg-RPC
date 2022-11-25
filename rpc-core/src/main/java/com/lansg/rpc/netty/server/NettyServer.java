@@ -3,6 +3,9 @@ package com.lansg.rpc.netty.server;
 import com.lansg.rpc.RpcProvider;
 import com.lansg.rpc.codec.CommonDecoder;
 import com.lansg.rpc.codec.CommonEncoder;
+import com.lansg.rpc.enumeration.RpcError;
+import com.lansg.rpc.exception.RpcException;
+import com.lansg.rpc.serializer.CommonSerializer;
 import com.lansg.rpc.serializer.HessianSerializer;
 import com.lansg.rpc.serializer.JsonSerializer;
 import com.lansg.rpc.serializer.KryoSerializer;
@@ -22,8 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 */
 @Slf4j
 public class NettyServer implements RpcProvider {
+
+    private CommonSerializer serializer;
+
     @Override
     public void start(int port) {
+        if (serializer==null){
+            log.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
         //创建两个线程组bossGroup、workerGroup
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -48,7 +58,8 @@ public class NettyServer implements RpcProvider {
                             ChannelPipeline pipeline = ch.pipeline();
 //                            pipeline.addLast(new CommonEncoder(new JsonSerializer()));
 //                            pipeline.addLast(new CommonEncoder(new KryoSerializer()));
-                            pipeline.addLast(new CommonEncoder(new HessianSerializer()));
+//                            pipeline.addLast(new CommonEncoder(new HessianSerializer()));
+                            pipeline.addLast(new CommonEncoder(serializer));
                             pipeline.addLast(new CommonDecoder());
                             pipeline.addLast(new NettyServerHandler());
                         }
@@ -64,5 +75,10 @@ public class NettyServer implements RpcProvider {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer=serializer;
     }
 }

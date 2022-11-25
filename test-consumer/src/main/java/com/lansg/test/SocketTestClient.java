@@ -4,12 +4,16 @@ import com.lansg.rpc.RpcConsumerProxy;
 import com.lansg.rpc.api.HelloObject;
 import com.lansg.rpc.api.HelloService;
 import com.lansg.rpc.api.HelloService2;
+import com.lansg.rpc.serializer.HessianSerializer;
+import com.lansg.rpc.serializer.JsonSerializer;
+import com.lansg.rpc.serializer.KryoSerializer;
 import com.lansg.rpc.socket.client.SocketClient;
 
 
 public class SocketTestClient {
     public static void main(String[] args) {
         SocketClient client = new SocketClient("127.0.0.1", 9000);
+        client.setSerializer(new KryoSerializer());
         RpcConsumerProxy proxy = new RpcConsumerProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
 //        HelloService2 helloService2 = proxy.getProxy(HelloService2.class);

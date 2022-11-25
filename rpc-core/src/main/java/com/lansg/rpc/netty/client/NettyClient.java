@@ -5,6 +5,9 @@ import com.lansg.rpc.codec.CommonDecoder;
 import com.lansg.rpc.codec.CommonEncoder;
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
+import com.lansg.rpc.enumeration.RpcError;
+import com.lansg.rpc.exception.RpcException;
+import com.lansg.rpc.serializer.CommonSerializer;
 import com.lansg.rpc.serializer.HessianSerializer;
 import com.lansg.rpc.serializer.JsonSerializer;
 import com.lansg.rpc.serializer.KryoSerializer;
@@ -30,6 +33,8 @@ public class NettyClient implements RpcConsumer {
     private int port;
     private static final Bootstrap bootstrap;
 
+    private CommonSerializer serializer;
+
     public NettyClient(String host, int port) {
         this.host = host;
         this.port = port;
@@ -43,24 +48,37 @@ public class NettyClient implements RpcConsumer {
         bootstrap.group(group)
                 //设置客户端的通道实现类型
                 .channel(NioSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.SO_KEEPALIVE, true);
                 //初始化通道
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
+//                .handler(new ChannelInitializer<SocketChannel>() {
+//                    @Override
+//                    protected void initChannel(SocketChannel ch) throws Exception {
                         //添加客户端通道的处理器
-                        ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new CommonDecoder())
+//                        ChannelPipeline pipeline = ch.pipeline();
+//                        pipeline.addLast(new CommonDecoder())
 //                                .addLast(new CommonEncoder(new JsonSerializer()))
 //                                .addLast(new CommonEncoder(new KryoSerializer()))
-                                .addLast(new CommonEncoder(new HessianSerializer()))
-                                .addLast(new NettyClientHandler());
-                    }
-                });
+//                                .addLast(new CommonEncoder(new HessianSerializer()))
+//                                .addLast(new NettyClientHandler());
+//                    }
+//                });
     }
 
     @Override
     public Object sendRequest(RpcRequestBean rpcRequest) {
+        if (serializer == null){
+            log.info("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
+        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch) throws Exception {
+                ChannelPipeline pipeline = ch.pipeline();
+                pipeline.addLast(new CommonDecoder())
+                        .addLast(new CommonEncoder(serializer))
+                        .addLast(new NettyClientHandler());
+            }
+        });
         try {
             //连接服务端
             ChannelFuture future = bootstrap.connect(host, port).sync();
@@ -86,5 +104,11 @@ public class NettyClient implements RpcConsumer {
         }
         return null;
     }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer=serializer;
+    }
+
 
 }
