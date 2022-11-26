@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 @Slf4j
 public class RpcConsumerProxy implements InvocationHandler {
@@ -42,7 +43,7 @@ public class RpcConsumerProxy implements InvocationHandler {
 //                .build();
 //        com.lansg.rpc.consumer.RpcConsumer rpcConsumer = new RpcConsumer();
 //        return rpcConsumer.sendRequest(rpcRequest, host, port);
-        RpcRequestBean rpcRequest = new RpcRequestBean(method.getDeclaringClass().getName(),
+        RpcRequestBean rpcRequest = new RpcRequestBean(UUID.randomUUID().toString(),method.getDeclaringClass().getName(),
                 method.getName(),args,method.getParameterTypes());
         return client.sendRequest(rpcRequest);
     }

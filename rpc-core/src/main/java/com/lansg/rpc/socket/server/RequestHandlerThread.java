@@ -45,7 +45,7 @@ public class RequestHandlerThread implements Runnable{
             Object result = requestHandler.handle(rpcRequest,service);
 //            objectOutputStream.writeObject(RpcResponseBean.success(result));
 //            objectOutputStream.flush();
-            RpcResponseBean<Object> response = RpcResponseBean.success(result);
+            RpcResponseBean<Object> response = RpcResponseBean.success(result, rpcRequest.getRequestId());
             ObjectWriter.writeObject(outputStream, response, serializer);
         }catch (IOException e){
             log.error("调用或发送时有错误发生：", e);

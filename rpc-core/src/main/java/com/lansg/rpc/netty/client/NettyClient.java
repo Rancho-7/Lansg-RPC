@@ -11,6 +11,7 @@ import com.lansg.rpc.serializer.CommonSerializer;
 import com.lansg.rpc.serializer.HessianSerializer;
 import com.lansg.rpc.serializer.JsonSerializer;
 import com.lansg.rpc.serializer.KryoSerializer;
+import com.lansg.rpc.util.RpcMessageChecker;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -94,8 +95,9 @@ public class NettyClient implements RpcConsumer {
                 });
                 //对通道关闭进行监听
                 channel.closeFuture().sync();
-                AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse");
+                AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse"+ rpcRequest.getRequestId());
                 RpcResponseBean rpcResponse = channel.attr(key).get();
+                RpcMessageChecker.check(rpcRequest, rpcResponse);
                 return rpcResponse.getData();
             }
 
