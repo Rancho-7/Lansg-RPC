@@ -21,7 +21,8 @@ public class SocketTestProvider {
         serviceRegistry.register(helloService);
         SocketServer socketServer = new SocketServer(serviceRegistry);
         socketServer.setSerializer(new HessianSerializer());
-        socketServer.start(9000);
+//        socketServer.start(9000);
+        socketServer.start(9999);
     }
 
 //    public static void main(String[] args) {
