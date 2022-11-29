@@ -1,4 +1,4 @@
-package com.lansg.rpc.socket.util;
+package com.lansg.rpc.transport.socket.util;
 
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;

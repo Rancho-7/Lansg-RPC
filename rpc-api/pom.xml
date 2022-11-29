@@ -5,7 +5,7 @@
     <parent>
         <artifactId>Lansg-RPC</artifactId>
         <groupId>com.lansg</groupId>
-        <version>2.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

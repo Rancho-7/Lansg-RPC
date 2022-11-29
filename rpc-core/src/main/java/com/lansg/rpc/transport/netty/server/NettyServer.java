@@ -1,14 +1,15 @@
-package com.lansg.rpc.netty.server;
+package com.lansg.rpc.transport.netty.server;
 
-import com.lansg.rpc.RpcProvider;
+import com.lansg.rpc.provider.ServiceProvider;
+import com.lansg.rpc.provider.ServiceProviderImpl;
+import com.lansg.rpc.registry.NacosServiceRegistry;
+import com.lansg.rpc.registry.ServiceRegistry;
+import com.lansg.rpc.transport.RpcProvider;
 import com.lansg.rpc.codec.CommonDecoder;
 import com.lansg.rpc.codec.CommonEncoder;
 import com.lansg.rpc.enumeration.RpcError;
 import com.lansg.rpc.exception.RpcException;
 import com.lansg.rpc.serializer.CommonSerializer;
-import com.lansg.rpc.serializer.HessianSerializer;
-import com.lansg.rpc.serializer.JsonSerializer;
-import com.lansg.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -18,6 +19,8 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+
 /**
 * @author: Lansg
 * @date: 2022/11/22 20:17
@@ -26,14 +29,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NettyServer implements RpcProvider {
 
+    private final String host;
+    private final int port;
+
+    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
+
     private CommonSerializer serializer;
 
+    public NettyServer(String host,int port){
+        this.host=host;
+        this.port=port;
+        serviceRegistry=new NacosServiceRegistry();
+        serviceProvider=new ServiceProviderImpl();
+    }
+
     @Override
-    public void start(int port) {
+    public <T> void publishService(Object service, Class<T> serviceClass) {
         if (serializer==null){
             log.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
+        serviceProvider.addServiceProvider(service);
+        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        start();
+    }
+
+    @Override
+    public void start() {
         //创建两个线程组bossGroup、workerGroup
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -65,7 +88,7 @@ public class NettyServer implements RpcProvider {
                         }
                     });
             //绑定端口号，启动服务端
-            ChannelFuture future = serverBootstrap.bind(port).sync();
+            ChannelFuture future = serverBootstrap.bind(host,port).sync();
             //对关闭通道进行监听
             future.channel().closeFuture().sync();
 

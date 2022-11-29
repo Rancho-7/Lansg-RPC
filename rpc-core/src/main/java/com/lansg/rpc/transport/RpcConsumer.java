@@ -1,4 +1,4 @@
-package com.lansg.rpc;
+package com.lansg.rpc.transport;
 
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.serializer.CommonSerializer;

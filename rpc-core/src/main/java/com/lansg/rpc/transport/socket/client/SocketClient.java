@@ -1,18 +1,21 @@
-package com.lansg.rpc.socket.client;
+package com.lansg.rpc.transport.socket.client;
 
-import com.lansg.rpc.RpcConsumer;
+import com.lansg.rpc.registry.NacosServiceRegistry;
+import com.lansg.rpc.registry.ServiceRegistry;
+import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
 import com.lansg.rpc.enumeration.ResponseCode;
 import com.lansg.rpc.enumeration.RpcError;
 import com.lansg.rpc.exception.RpcException;
 import com.lansg.rpc.serializer.CommonSerializer;
-import com.lansg.rpc.socket.util.ObjectReader;
-import com.lansg.rpc.socket.util.ObjectWriter;
+import com.lansg.rpc.transport.socket.util.ObjectReader;
+import com.lansg.rpc.transport.socket.util.ObjectWriter;
 import com.lansg.rpc.util.RpcMessageChecker;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -22,14 +25,13 @@ import java.net.Socket;
 */
 @Slf4j
 public class SocketClient implements RpcConsumer {
-    private final String host;
-    private final int port;
+
+    private final ServiceRegistry serviceRegistry;
 
     private CommonSerializer serializer;
 
-    public SocketClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public SocketClient() {
+        this.serviceRegistry=new NacosServiceRegistry();
     }
 
     @Override
@@ -38,12 +40,14 @@ public class SocketClient implements RpcConsumer {
             log.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        try (Socket socket = new Socket(host, port)) {
+        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        try (Socket socket = new Socket()) {
 //            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 //            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
 //            objectOutputStream.writeObject(rpcRequest);
 //            objectOutputStream.flush();
 //            RpcResponseBean rpcResponse = (RpcResponseBean) objectInputStream.readObject();
+            socket.connect(inetSocketAddress);
             OutputStream outputStream = socket.getOutputStream();
             InputStream inputStream = socket.getInputStream();
             ObjectWriter.writeObject(outputStream,rpcRequest,serializer);

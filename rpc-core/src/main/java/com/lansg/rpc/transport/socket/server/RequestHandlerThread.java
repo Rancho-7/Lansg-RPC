@@ -1,12 +1,12 @@
-package com.lansg.rpc.socket.server;
+package com.lansg.rpc.transport.socket.server;
 
-import com.lansg.rpc.RequestHandler;
+import com.lansg.rpc.handler.RequestHandler;
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
 import com.lansg.rpc.registry.ServiceRegistry;
 import com.lansg.rpc.serializer.CommonSerializer;
-import com.lansg.rpc.socket.util.ObjectReader;
-import com.lansg.rpc.socket.util.ObjectWriter;
+import com.lansg.rpc.transport.socket.util.ObjectReader;
+import com.lansg.rpc.transport.socket.util.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -41,8 +41,8 @@ public class RequestHandlerThread implements Runnable{
              OutputStream outputStream = socket.getOutputStream()) {
             RpcRequestBean rpcRequest = (RpcRequestBean) ObjectReader.readObject(inputStream);
             String interfaceName = rpcRequest.getInterfaceName();
-            Object service = serviceRegistry.getService(interfaceName);
-            Object result = requestHandler.handle(rpcRequest,service);
+//            Object service = serviceRegistry.getService(interfaceName);
+            Object result = requestHandler.handle(rpcRequest);
 //            objectOutputStream.writeObject(RpcResponseBean.success(result));
 //            objectOutputStream.flush();
             RpcResponseBean<Object> response = RpcResponseBean.success(result, rpcRequest.getRequestId());

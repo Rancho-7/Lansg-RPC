@@ -1,4 +1,4 @@
-package com.lansg.rpc.netty.client;
+package com.lansg.rpc.transport.netty.client;
 
 import com.lansg.rpc.codec.CommonDecoder;
 import com.lansg.rpc.codec.CommonEncoder;

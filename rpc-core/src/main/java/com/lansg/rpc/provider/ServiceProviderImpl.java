@@ -1,7 +1,8 @@
-package com.lansg.rpc.registry;
+package com.lansg.rpc.provider;
 
 import com.lansg.rpc.enumeration.RpcError;
 import com.lansg.rpc.exception.RpcException;
+import com.lansg.rpc.registry.ServiceRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -11,16 +12,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author: Lansg
  * @date: 2022/11/1 20:34
- * 默认的服务注册表
+ * 默认的服务注册表,保存服务端本地服务
  */
 @Slf4j
-public class DefaultServiceRegistry implements ServiceRegistry{
+public class ServiceProviderImpl implements ServiceProvider {
 
     private static final Map<String,Object> serviceMap = new ConcurrentHashMap<>();
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public synchronized <T> void register(T service) {
+    public  <T> void addServiceProvider(T service) {
         //getCanonicalName()返回正常包含路径的类名:HelloServiceImpl
         String serviceName = service.getClass().getCanonicalName();
         if (registeredService.contains(serviceName)) return;
@@ -36,7 +37,7 @@ public class DefaultServiceRegistry implements ServiceRegistry{
     }
 
     @Override
-    public synchronized Object getService(String serviceName) {
+    public  Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null){
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);

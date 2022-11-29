@@ -1,4 +1,4 @@
-package com.lansg.rpc;
+package com.lansg.rpc.transport;
 
 import com.lansg.rpc.serializer.CommonSerializer;
 
@@ -9,8 +9,9 @@ import com.lansg.rpc.serializer.CommonSerializer;
 */
 public interface RpcProvider {
 
-    void start(int port);
+    void start();
 
     void setSerializer(CommonSerializer serializer);
 
+    <T> void publishService(Object service,Class<T> serviceClass);
 }

@@ -1,9 +1,11 @@
-package com.lansg.rpc;
+package com.lansg.rpc.handler;
 
 
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
 import com.lansg.rpc.enumeration.ResponseCode;
+import com.lansg.rpc.provider.ServiceProvider;
+import com.lansg.rpc.provider.ServiceProviderImpl;
 import com.sun.org.apache.regexp.internal.REUtil;
 import lombok.Setter;
 import lombok.extern.java.Log;
@@ -24,8 +26,15 @@ import java.net.Socket;
 @Slf4j
 public class RequestHandler{
 
-    public Object handle(RpcRequestBean rpcRequest,Object service){
+    private static final ServiceProvider serviceProvider;
+
+    static {
+        serviceProvider = new ServiceProviderImpl();
+    }
+
+    public Object handle(RpcRequestBean rpcRequest){
         Object result = null;
+        Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
         try {
             result = invokeTargetMethod(rpcRequest,service);
             log.info("服务:{} 成功调用方法:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());

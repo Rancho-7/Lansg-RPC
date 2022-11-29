@@ -1,26 +1,20 @@
-package com.lansg.rpc.netty.client;
+package com.lansg.rpc.transport.netty.client;
 
-import com.lansg.rpc.RpcConsumer;
-import com.lansg.rpc.codec.CommonDecoder;
-import com.lansg.rpc.codec.CommonEncoder;
+import com.lansg.rpc.registry.NacosServiceRegistry;
+import com.lansg.rpc.registry.ServiceRegistry;
+import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
 import com.lansg.rpc.enumeration.RpcError;
 import com.lansg.rpc.exception.RpcException;
 import com.lansg.rpc.serializer.CommonSerializer;
-import com.lansg.rpc.serializer.HessianSerializer;
-import com.lansg.rpc.serializer.JsonSerializer;
-import com.lansg.rpc.serializer.KryoSerializer;
 import com.lansg.rpc.util.RpcMessageChecker;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,12 +30,12 @@ public class NettyClient implements RpcConsumer {
     private String host;
     private int port;
     private static final Bootstrap bootstrap;
+    private final ServiceRegistry serviceRegistry;
 
     private CommonSerializer serializer;
 
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public NettyClient(){
+        this.serviceRegistry= new NacosServiceRegistry();
     }
 
     static {
@@ -90,7 +84,8 @@ public class NettyClient implements RpcConsumer {
 //            log.info("客户端连接到服务器 {}:{}", host, port);
 //            Channel channel = future.channel();
 //            if(channel != null) {
-            Channel channel = ChannelProvider.get(new InetSocketAddress(host, port), serializer);
+            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
             if (channel.isActive()){
                 channel.writeAndFlush(rpcRequest).addListener(future1 -> {
                     if(future1.isSuccess()) {

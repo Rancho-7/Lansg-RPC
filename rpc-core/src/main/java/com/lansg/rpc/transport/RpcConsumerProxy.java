@@ -1,8 +1,7 @@
-package com.lansg.rpc;
+package com.lansg.rpc.transport;
 
-import com.lansg.rpc.RpcConsumer;
+import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.entity.RpcRequestBean;
-import com.lansg.rpc.entity.RpcResponseBean;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
