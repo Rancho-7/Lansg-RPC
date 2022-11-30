@@ -1,6 +1,8 @@
 package com.lansg.rpc.transport.socket.client;
 
+import com.lansg.rpc.registry.NacosServiceDiscovery;
 import com.lansg.rpc.registry.NacosServiceRegistry;
+import com.lansg.rpc.registry.ServiceDiscovery;
 import com.lansg.rpc.registry.ServiceRegistry;
 import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.entity.RpcRequestBean;
@@ -26,12 +28,12 @@ import java.net.Socket;
 @Slf4j
 public class SocketClient implements RpcConsumer {
 
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
     private CommonSerializer serializer;
 
     public SocketClient() {
-        this.serviceRegistry=new NacosServiceRegistry();
+        this.serviceDiscovery=new NacosServiceDiscovery();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class SocketClient implements RpcConsumer {
             log.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
         try (Socket socket = new Socket()) {
 //            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 //            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());

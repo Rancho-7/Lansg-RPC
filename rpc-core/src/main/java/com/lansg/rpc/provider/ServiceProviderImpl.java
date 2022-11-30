@@ -21,19 +21,20 @@ public class ServiceProviderImpl implements ServiceProvider {
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public  <T> void addServiceProvider(T service) {
+    public  <T> void addServiceProvider(T service, Class<T> serviceClass) {
         //getCanonicalName()返回正常包含路径的类名:HelloServiceImpl
-        String serviceName = service.getClass().getCanonicalName();
+        String serviceName = serviceClass.getCanonicalName();
         if (registeredService.contains(serviceName)) return;
         registeredService.add(serviceName);
-        Class<?>[] interfaces = service.getClass().getInterfaces();
-        if (interfaces.length == 0){
-            throw new RpcException(RpcError.SERVICE_NOT_IMPLEMENT_ANY_INTERFACE);
-        }
-        for (Class<?> i:interfaces){
-            serviceMap.put(i.getCanonicalName(),service);
-        }
-        log.info("向接口: {} 注册服务: {}", interfaces, serviceName);
+//        Class<?>[] interfaces = service.getClass().getInterfaces();
+//        if (interfaces.length == 0){
+//            throw new RpcException(RpcError.SERVICE_NOT_IMPLEMENT_ANY_INTERFACE);
+//        }
+//        for (Class<?> i:interfaces){
+//            serviceMap.put(i.getCanonicalName(),service);
+//        }
+        serviceMap.put(serviceName,service);
+        log.info("向接口: {} 注册服务: {}", service.getClass().getInterfaces(), serviceName);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.lansg.rpc.transport.netty.client;
 
+import com.lansg.rpc.registry.NacosServiceDiscovery;
 import com.lansg.rpc.registry.NacosServiceRegistry;
+import com.lansg.rpc.registry.ServiceDiscovery;
 import com.lansg.rpc.registry.ServiceRegistry;
 import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.entity.RpcRequestBean;
@@ -30,12 +32,12 @@ public class NettyClient implements RpcConsumer {
     private String host;
     private int port;
     private static final Bootstrap bootstrap;
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
     private CommonSerializer serializer;
 
     public NettyClient(){
-        this.serviceRegistry= new NacosServiceRegistry();
+        this.serviceDiscovery= new NacosServiceDiscovery();
     }
 
     static {
@@ -84,7 +86,7 @@ public class NettyClient implements RpcConsumer {
 //            log.info("客户端连接到服务器 {}:{}", host, port);
 //            Channel channel = future.channel();
 //            if(channel != null) {
-            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
             if (channel.isActive()){
                 channel.writeAndFlush(rpcRequest).addListener(future1 -> {
@@ -102,6 +104,7 @@ public class NettyClient implements RpcConsumer {
                 result.set(rpcResponse.getData());
 //                return rpcResponse.getData();
             }else{
+                channel.close();
                 System.exit(0);
             }
         } catch (InterruptedException e) {
