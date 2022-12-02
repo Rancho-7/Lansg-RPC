@@ -18,17 +18,17 @@ import java.net.Socket;
  * 处理RpcRequest的工作线程
 */
 @Slf4j
-public class RequestHandlerThread implements Runnable{
+public class SocketRequestHandlerThread implements Runnable{
 
     private Socket socket;
     private RequestHandler requestHandler;
-    private ServiceRegistry serviceRegistry;
+//    private ServiceRegistry serviceRegistry;
     private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket,RequestHandler requestHandler, ServiceRegistry serviceRegistry,CommonSerializer serializer){
+    public SocketRequestHandlerThread(Socket socket, RequestHandler requestHandler, CommonSerializer serializer){
         this.socket = socket;
         this.requestHandler = requestHandler;
-        this.serviceRegistry = serviceRegistry;
+//        this.serviceRegistry = serviceRegistry;
         this.serializer=serializer;
     }
 
@@ -40,7 +40,7 @@ public class RequestHandlerThread implements Runnable{
         try (InputStream inputStream = socket.getInputStream();
              OutputStream outputStream = socket.getOutputStream()) {
             RpcRequestBean rpcRequest = (RpcRequestBean) ObjectReader.readObject(inputStream);
-            String interfaceName = rpcRequest.getInterfaceName();
+//            String interfaceName = rpcRequest.getInterfaceName();
 //            Object service = serviceRegistry.getService(interfaceName);
             Object result = requestHandler.handle(rpcRequest);
 //            objectOutputStream.writeObject(RpcResponseBean.success(result));

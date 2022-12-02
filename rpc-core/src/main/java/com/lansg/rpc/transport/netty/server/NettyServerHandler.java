@@ -1,11 +1,10 @@
 package com.lansg.rpc.transport.netty.server;
 
+import com.lansg.rpc.factory.SingletonFactory;
 import com.lansg.rpc.handler.RequestHandler;
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
-import com.lansg.rpc.provider.ServiceProviderImpl;
-import com.lansg.rpc.registry.ServiceRegistry;
-import com.lansg.rpc.util.ThreadPoolFactory;
+import com.lansg.rpc.factory.ThreadPoolFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,12 +25,16 @@ import java.util.concurrent.ExecutorService;
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequestBean> {
 
     private static RequestHandler requestHandler;
-    private static final String THREAD_NAME_PREFIX = "netty-server-handler";
-    private static final ExecutorService threadPool;
+    private  final String THREAD_NAME_PREFIX = "netty-server-handler";
+    private  final ExecutorService threadPool;
 
-    static {
-        requestHandler = new RequestHandler();
-        threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
+//    static {
+//        requestHandler = new RequestHandler();
+//        threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
+//    }
+    public NettyServerHandler() {
+        this.requestHandler = SingletonFactory.getInstance(RequestHandler.class);
+        this.threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
     }
 
     @Override

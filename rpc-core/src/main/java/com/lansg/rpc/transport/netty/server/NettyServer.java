@@ -1,5 +1,6 @@
 package com.lansg.rpc.transport.netty.server;
 
+import com.lansg.rpc.hook.ShutdownHook;
 import com.lansg.rpc.provider.ServiceProvider;
 import com.lansg.rpc.provider.ServiceProviderImpl;
 import com.lansg.rpc.registry.NacosServiceRegistry;
@@ -89,6 +90,7 @@ public class NettyServer implements RpcProvider {
                     });
             //绑定端口号，启动服务端
             ChannelFuture future = serverBootstrap.bind(host,port).sync();
+            ShutdownHook.getShutdownHook().addClearAllHook();
             //对关闭通道进行监听
             future.channel().closeFuture().sync();
 

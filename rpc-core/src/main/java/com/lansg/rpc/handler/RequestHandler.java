@@ -33,24 +33,26 @@ public class RequestHandler{
     }
 
     public Object handle(RpcRequestBean rpcRequest){
-        Object result = null;
+//        Object result = null;
         Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
-        try {
-            result = invokeTargetMethod(rpcRequest,service);
-            log.info("服务:{} 成功调用方法:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
-        } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
-            log.error("调用或发送时有错误发生:", e);
-        }
-        return  result;
+//        try {
+//            result = invokeTargetMethod(rpcRequest,service);
+//            log.info("服务:{} 成功调用方法:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
+//        } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
+//            log.error("调用或发送时有错误发生:", e);
+//        }
+        return  invokeTargetMethod(rpcRequest,service);
     }
 
-    private Object invokeTargetMethod(RpcRequestBean rpcRequest,Object service) throws IllegalAccessException, InvocationTargetException, ClassNotFoundException {
-        Method method;
+    private Object invokeTargetMethod(RpcRequestBean rpcRequest,Object service) {
+        Object result;
         try {
-            method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
-        } catch (NoSuchMethodException e) {
+            Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+            result = method.invoke(service,rpcRequest.getParameters());
+            log.info("服务:{} 成功调用方法:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return RpcResponseBean.fail(ResponseCode.METHOD_NOT_FOUND, rpcRequest.getRequestId());
         }
-        return method.invoke(service, rpcRequest.getParameters());
+        return result;
     }
 }

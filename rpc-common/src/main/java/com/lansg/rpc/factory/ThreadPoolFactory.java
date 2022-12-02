@@ -1,4 +1,4 @@
-package com.lansg.rpc.util;
+package com.lansg.rpc.factory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

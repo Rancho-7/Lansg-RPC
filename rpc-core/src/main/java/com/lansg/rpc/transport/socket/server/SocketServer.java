@@ -1,6 +1,7 @@
 package com.lansg.rpc.transport.socket.server;
 
 import com.lansg.rpc.handler.RequestHandler;
+import com.lansg.rpc.hook.ShutdownHook;
 import com.lansg.rpc.provider.ServiceProvider;
 import com.lansg.rpc.provider.ServiceProviderImpl;
 import com.lansg.rpc.registry.NacosServiceRegistry;
@@ -9,7 +10,7 @@ import com.lansg.rpc.enumeration.RpcError;
 import com.lansg.rpc.exception.RpcException;
 import com.lansg.rpc.registry.ServiceRegistry;
 import com.lansg.rpc.serializer.CommonSerializer;
-import com.lansg.rpc.util.ThreadPoolFactory;
+import com.lansg.rpc.factory.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -64,12 +65,14 @@ public class SocketServer implements RpcProvider {
 
     @Override
     public void start(){
-        try (ServerSocket serverSocket=new ServerSocket(port)){
+        try (ServerSocket serverSocket=new ServerSocket()){
+            serverSocket.bind(new InetSocketAddress(host,port));
             log.info("服务器启动...");
+            ShutdownHook.getShutdownHook().addClearAllHook();
             Socket socket;
             while ((socket = serverSocket.accept())!=null){
                 log.info("消费者连接: {}:{}", socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry,serializer));
+                threadPool.execute(new SocketRequestHandlerThread(socket, requestHandler,serializer));
             }
             threadPool.shutdown();
         }catch (IOException e){

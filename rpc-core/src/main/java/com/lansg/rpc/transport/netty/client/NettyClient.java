@@ -31,6 +31,7 @@ public class NettyClient implements RpcConsumer {
 
     private String host;
     private int port;
+    private static final EventLoopGroup group;
     private static final Bootstrap bootstrap;
     private final ServiceDiscovery serviceDiscovery;
 
@@ -41,7 +42,8 @@ public class NettyClient implements RpcConsumer {
     }
 
     static {
-        EventLoopGroup group = new NioEventLoopGroup();
+//        EventLoopGroup group = new NioEventLoopGroup();
+        group = new NioEventLoopGroup();
         //创建bootstrap对象，配置参数
         bootstrap = new Bootstrap();
         //设置线程组
@@ -88,27 +90,44 @@ public class NettyClient implements RpcConsumer {
 //            if(channel != null) {
             InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
-            if (channel.isActive()){
-                channel.writeAndFlush(rpcRequest).addListener(future1 -> {
-                    if(future1.isSuccess()) {
-                        log.info(String.format("客户端发送消息: %s", rpcRequest.toString()));
-                    } else {
-                        log.error("发送消息时有错误发生: ", future1.cause());
-                    }
-                });
-                //对通道关闭进行监听
-                channel.closeFuture().sync();
-                AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse"+ rpcRequest.getRequestId());
-                RpcResponseBean rpcResponse = channel.attr(key).get();
-                RpcMessageChecker.check(rpcRequest, rpcResponse);
-                result.set(rpcResponse.getData());
-//                return rpcResponse.getData();
-            }else{
-                channel.close();
-                System.exit(0);
+//            if (channel.isActive()){
+//                channel.writeAndFlush(rpcRequest).addListener(future1 -> {
+//                    if(future1.isSuccess()) {
+//                        log.info(String.format("客户端发送消息: %s", rpcRequest.toString()));
+//                    } else {
+//                        log.error("发送消息时有错误发生: ", future1.cause());
+//                    }
+//                });
+//                //对通道关闭进行监听
+//                channel.closeFuture().sync();
+//                AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse"+ rpcRequest.getRequestId());
+//                RpcResponseBean rpcResponse = channel.attr(key).get();
+//                RpcMessageChecker.check(rpcRequest, rpcResponse);
+//                result.set(rpcResponse.getData());
+////                return rpcResponse.getData();
+//            }else{
+//                channel.close();
+//                System.exit(0);
+//            }
+            if (!channel.isActive()) {
+                group.shutdownGracefully();
+                return null;
             }
+            channel.writeAndFlush(rpcRequest).addListener(future1 -> {
+                if (future1.isSuccess()) {
+                    log.info(String.format("客户端发送消息: %s", rpcRequest.toString()));
+                } else {
+                    log.error("发送消息时有错误发生: ", future1.cause());
+                }
+            });
+            channel.closeFuture().sync();
+            AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
+            RpcResponseBean rpcResponse = channel.attr(key).get();
+            RpcMessageChecker.check(rpcRequest, rpcResponse);
+            result.set(rpcResponse.getData());
         } catch (InterruptedException e) {
             log.error("发送消息时有错误发生: ", e);
+            Thread.currentThread().interrupt();
         }
         return result.get();
     }
