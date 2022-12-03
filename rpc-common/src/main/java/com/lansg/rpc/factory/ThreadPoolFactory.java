@@ -1,7 +1,9 @@
 package com.lansg.rpc.factory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
@@ -9,6 +11,7 @@ import java.util.concurrent.*;
 * @date: 2022/11/24 19:45
 * @Description: 创建ThreadPool线程池的工具类
 */
+@Slf4j
 public class ThreadPoolFactory {
     /**
      * 线程池参数
@@ -18,6 +21,8 @@ public class ThreadPoolFactory {
     private static final int KEEP_ALIVE_TIME = 1;
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
 
+    private static Map<String,ExecutorService> threadPollsMap = new ConcurrentHashMap<>();
+
     private ThreadPoolFactory(){}
 
     public static ExecutorService createDefaultThreadPool(String threadNamePrefix){
@@ -25,10 +30,37 @@ public class ThreadPoolFactory {
     }
 
     public static ExecutorService createDefaultThreadPool(String threadNamePrefix,Boolean daemon){
+        ExecutorService pool = threadPollsMap.computeIfAbsent(threadNamePrefix, k -> createThreadPool(threadNamePrefix, daemon));
+        if (pool.isShutdown() || pool.isTerminated()) {
+            threadPollsMap.remove(threadNamePrefix);
+            pool = createThreadPool(threadNamePrefix, daemon);
+            threadPollsMap.put(threadNamePrefix, pool);
+        }
+        return pool;
+    }
+
+    public static void shutDownAll() {
+        log.info("关闭所有线程池...");
+        threadPollsMap.entrySet().parallelStream().forEach(entry -> {
+            ExecutorService executorService = entry.getValue();
+            executorService.shutdown();
+            log.info("关闭线程池 [{}] [{}]", entry.getKey(), executorService.isTerminated());
+            try {
+                executorService.awaitTermination(10, TimeUnit.SECONDS);
+            } catch (InterruptedException ie) {
+                log.error("关闭线程池失败！");
+                executorService.shutdownNow();
+            }
+        });
+    }
+
+
+    private static ExecutorService createThreadPool(String threadNamePrefix, Boolean daemon) {
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
         ThreadFactory threadFactory = createThreadFactory(threadNamePrefix,daemon);
         return new ThreadPoolExecutor(CORE_POOL_SIZE,MAXIMUM_POOL_SIZE_SIZE,KEEP_ALIVE_TIME,TimeUnit.MINUTES,workQueue,threadFactory);
     }
+
     /**
      * 创建 ThreadFactory.如果threadNamePrefix不为空则使用自建ThreadFactory，否则使用defaultThreadFactory
      * @param threadNamePrefix 作为创建的线程名字的前缀

@@ -3,6 +3,7 @@ package test;
 import com.lansg.rpc.api.HelloService;
 import com.lansg.rpc.provider.ServiceProviderImpl;
 import com.lansg.rpc.registry.ServiceRegistry;
+import com.lansg.rpc.serializer.CommonSerializer;
 import com.lansg.rpc.serializer.HessianSerializer;
 import com.lansg.rpc.transport.socket.server.SocketServer;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SocketTestProvider {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl2();
-        SocketServer socketServer = new SocketServer("127.0.0.1", 9998);
-        socketServer.setSerializer(new HessianSerializer());
+        SocketServer socketServer = new SocketServer("127.0.0.1", 9998, CommonSerializer.KRYO_SERIALIZER);
+//        socketServer.setSerializer(new HessianSerializer());
         socketServer.publishService(helloService, HelloService.class);
     }
 

@@ -36,13 +36,18 @@ public class NettyServer implements RpcProvider {
     private final ServiceRegistry serviceRegistry;
     private final ServiceProvider serviceProvider;
 
-    private CommonSerializer serializer;
+    private final CommonSerializer serializer;
 
     public NettyServer(String host,int port){
+        this(host,port,DEFAULT_SERIALIZER);
+    }
+
+    public NettyServer(String host,int port,Integer serializer){
         this.host=host;
         this.port=port;
         serviceRegistry=new NacosServiceRegistry();
         serviceProvider=new ServiceProviderImpl();
+        this.serializer=CommonSerializer.getByCode(serializer);
     }
 
     @Override
@@ -58,6 +63,7 @@ public class NettyServer implements RpcProvider {
 
     @Override
     public void start() {
+        ShutdownHook.getShutdownHook().addClearAllHook();
         //创建两个线程组bossGroup、workerGroup
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -90,7 +96,6 @@ public class NettyServer implements RpcProvider {
                     });
             //绑定端口号，启动服务端
             ChannelFuture future = serverBootstrap.bind(host,port).sync();
-            ShutdownHook.getShutdownHook().addClearAllHook();
             //对关闭通道进行监听
             future.channel().closeFuture().sync();
 
@@ -102,8 +107,8 @@ public class NettyServer implements RpcProvider {
         }
     }
 
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer=serializer;
-    }
+//    @Override
+//    public void setSerializer(CommonSerializer serializer) {
+//        this.serializer=serializer;
+//    }
 }

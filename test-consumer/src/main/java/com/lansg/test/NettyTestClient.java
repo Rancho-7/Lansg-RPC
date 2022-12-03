@@ -1,5 +1,6 @@
 package com.lansg.test;
 
+import com.lansg.rpc.serializer.CommonSerializer;
 import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.transport.RpcConsumerProxy;
 import com.lansg.rpc.api.HelloObject;
@@ -14,8 +15,8 @@ import com.lansg.rpc.serializer.ProtobufSerializer;
 */
 public class NettyTestClient {
     public static void main(String[] args) {
-        RpcConsumer client = new NettyClient();
-        client.setSerializer(new ProtobufSerializer());
+        RpcConsumer client = new NettyClient(CommonSerializer.KRYO_SERIALIZER);
+//        client.setSerializer(new ProtobufSerializer());
         RpcConsumerProxy rpcClientProxy = new RpcConsumerProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "This is a message");

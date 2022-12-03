@@ -30,10 +30,15 @@ public class SocketClient implements RpcConsumer {
 
     private final ServiceDiscovery serviceDiscovery;
 
-    private CommonSerializer serializer;
+    private final CommonSerializer serializer;
 
-    public SocketClient() {
+    public SocketClient(){
+        this(DEFAULT_SERIALIZER);
+    }
+
+    public SocketClient(Integer serializer) {
         this.serviceDiscovery=new NacosServiceDiscovery();
+        this.serializer=CommonSerializer.getByCode(serializer);
     }
 
     @Override
@@ -71,8 +76,8 @@ public class SocketClient implements RpcConsumer {
         }
     }
 
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer=serializer;
-    }
+//    @Override
+//    public void setSerializer(CommonSerializer serializer) {
+//        this.serializer=serializer;
+//    }
 }

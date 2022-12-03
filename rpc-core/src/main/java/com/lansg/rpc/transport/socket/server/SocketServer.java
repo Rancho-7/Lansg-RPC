@@ -35,12 +35,16 @@ public class SocketServer implements RpcProvider {
     private final ExecutorService threadPool;;
     private final String host;
     private final int port;
-    private CommonSerializer serializer;
-    private RequestHandler requestHandler = new RequestHandler();
+    private final CommonSerializer serializer;
+    private final RequestHandler requestHandler = new RequestHandler();
     private final ServiceRegistry serviceRegistry;
     private final ServiceProvider serviceProvider;
 
     public SocketServer(String host,int port){
+        this(host,port,DEFAULT_SERIALIZER);
+    }
+
+    public SocketServer(String host,int port,Integer serializer){
 //        this.serviceRegistry = serviceRegistry;
 //        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
 //        ThreadFactory threadFactory = Executors.defaultThreadFactory();
@@ -50,6 +54,7 @@ public class SocketServer implements RpcProvider {
         this.host=host;
         this.serviceRegistry=new NacosServiceRegistry();
         this.serviceProvider=new ServiceProviderImpl();
+        this.serializer=CommonSerializer.getByCode(serializer);
     }
 
     @Override
@@ -80,8 +85,8 @@ public class SocketServer implements RpcProvider {
         }
     }
 
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer=serializer;
-    }
+//    @Override
+//    public void setSerializer(CommonSerializer serializer) {
+//        this.serializer=serializer;
+//    }
 }

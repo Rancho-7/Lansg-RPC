@@ -1,5 +1,6 @@
 package com.lansg.test;
 
+import com.lansg.rpc.serializer.CommonSerializer;
 import com.lansg.rpc.transport.RpcConsumerProxy;
 import com.lansg.rpc.api.HelloObject;
 import com.lansg.rpc.api.HelloService;
@@ -10,8 +11,8 @@ import com.lansg.rpc.transport.socket.client.SocketClient;
 public class SocketTestClient {
     public static void main(String[] args) {
 //        SocketClient client = new SocketClient("127.0.0.1", 9000);
-        SocketClient client = new SocketClient();
-        client.setSerializer(new KryoSerializer());
+        SocketClient client = new SocketClient(CommonSerializer.KRYO_SERIALIZER);
+//        client.setSerializer(new KryoSerializer());
         RpcConsumerProxy proxy = new RpcConsumerProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
 //        HelloService2 helloService2 = proxy.getProxy(HelloService2.class);

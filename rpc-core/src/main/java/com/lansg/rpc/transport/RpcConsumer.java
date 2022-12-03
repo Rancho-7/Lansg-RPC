@@ -10,8 +10,10 @@ import com.lansg.rpc.serializer.CommonSerializer;
 */
 public interface RpcConsumer {
 
+    int DEFAULT_SERIALIZER = CommonSerializer.KRYO_SERIALIZER;
+
     Object sendRequest(RpcRequestBean rpcRequest);
 
-    void setSerializer(CommonSerializer serializer);
+//    void setSerializer(CommonSerializer serializer);
 
 }
