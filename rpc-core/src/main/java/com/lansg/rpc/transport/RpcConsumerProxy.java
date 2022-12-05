@@ -43,7 +43,7 @@ public class RpcConsumerProxy implements InvocationHandler {
 //        com.lansg.rpc.consumer.RpcConsumer rpcConsumer = new RpcConsumer();
 //        return rpcConsumer.sendRequest(rpcRequest, host, port);
         RpcRequestBean rpcRequest = new RpcRequestBean(UUID.randomUUID().toString(),method.getDeclaringClass().getName(),
-                method.getName(),args,method.getParameterTypes());
+                method.getName(),args,method.getParameterTypes(),false);
         return client.sendRequest(rpcRequest);
     }
 }
