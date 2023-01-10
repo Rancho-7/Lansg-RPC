@@ -2,6 +2,7 @@ package com.lansg.rpc.transport.netty.client;
 
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.entity.RpcResponseBean;
+import com.lansg.rpc.factory.SingletonFactory;
 import com.lansg.rpc.serializer.CommonSerializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -23,13 +24,21 @@ import java.net.InetSocketAddress;
 @Slf4j
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponseBean> {
 
+
+    private final UnprocessedRequests unprocessedRequests;
+
+    public NettyClientHandler() {
+        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponseBean msg) throws Exception {
         try {
             log.info(String.format("客户端接收到消息: %s", msg));
-            AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse"+ msg.getRequestId());
-            ctx.channel().attr(key).set(msg);
-            ctx.channel().close();
+//            AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse"+ msg.getRequestId());
+//            ctx.channel().attr(key).set(msg);
+//            ctx.channel().close();
+            unprocessedRequests.complete(msg);
         } finally {
             ReferenceCountUtil.release(msg);
         }

@@ -1,5 +1,6 @@
 package com.lansg.rpc.transport.netty.client;
 
+import com.lansg.rpc.factory.SingletonFactory;
 import com.lansg.rpc.registry.NacosServiceDiscovery;
 import com.lansg.rpc.registry.NacosServiceRegistry;
 import com.lansg.rpc.registry.ServiceDiscovery;
@@ -19,6 +20,7 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -36,6 +38,7 @@ public class NettyClient implements RpcConsumer {
     private final ServiceDiscovery serviceDiscovery;
 
     private final CommonSerializer serializer;
+    private final UnprocessedRequests unprocessedRequests;
 
     public NettyClient(){
         this(DEFAULT_SERIALIZER);
@@ -44,6 +47,7 @@ public class NettyClient implements RpcConsumer {
     public NettyClient(Integer serializer){
         this.serviceDiscovery= new NacosServiceDiscovery();
         this.serializer=CommonSerializer.getByCode(serializer);
+        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }
 
     static {
@@ -53,9 +57,10 @@ public class NettyClient implements RpcConsumer {
         bootstrap = new Bootstrap();
         //设置线程组
         bootstrap.group(group)
+                .channel(NioSocketChannel.class);
                 //设置客户端的通道实现类型
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true);
+//                .channel(NioSocketChannel.class)
+//                .option(ChannelOption.SO_KEEPALIVE, true);
                 //初始化通道
 //                .handler(new ChannelInitializer<SocketChannel>() {
 //                    @Override
@@ -72,7 +77,7 @@ public class NettyClient implements RpcConsumer {
     }
 
     @Override
-    public Object sendRequest(RpcRequestBean rpcRequest) {
+    public CompletableFuture<RpcResponseBean> sendRequest(RpcRequestBean rpcRequest) {
         if (serializer == null){
             log.info("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
@@ -86,7 +91,8 @@ public class NettyClient implements RpcConsumer {
 //                        .addLast(new NettyClientHandler());
 //            }
 //        });
-        AtomicReference<Object> result = new AtomicReference<>(null);
+//        AtomicReference<Object> result = new AtomicReference<>(null);
+        CompletableFuture<RpcResponseBean> resultFuture = new CompletableFuture<>();
         try {
             //连接服务端
 //            ChannelFuture future = bootstrap.connect(host, port).sync();
@@ -118,23 +124,28 @@ public class NettyClient implements RpcConsumer {
                 group.shutdownGracefully();
                 return null;
             }
-            channel.writeAndFlush(rpcRequest).addListener(future1 -> {
+            unprocessedRequests.put(rpcRequest.getRequestId(),resultFuture);
+            channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener)future1 -> {
                 if (future1.isSuccess()) {
                     log.info(String.format("客户端发送消息: %s", rpcRequest.toString()));
                 } else {
+                    future1.channel().close();
+                    resultFuture.completeExceptionally(future1.cause());
                     log.error("发送消息时有错误发生: ", future1.cause());
                 }
             });
-            channel.closeFuture().sync();
-            AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
-            RpcResponseBean rpcResponse = channel.attr(key).get();
-            RpcMessageChecker.check(rpcRequest, rpcResponse);
-            result.set(rpcResponse.getData());
+//            channel.closeFuture().sync();
+//            AttributeKey<RpcResponseBean> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
+//            RpcResponseBean rpcResponse = channel.attr(key).get();
+//            RpcMessageChecker.check(rpcRequest, rpcResponse);
+//            result.set(rpcResponse.getData());
         } catch (InterruptedException e) {
-            log.error("发送消息时有错误发生: ", e);
+//            log.error("发送消息时有错误发生: ", e);
+            unprocessedRequests.remove(rpcRequest.getRequestId());
+            log.error(e.getMessage(),e);
             Thread.currentThread().interrupt();
         }
-        return result.get();
+        return resultFuture;
     }
 
 //    @Override

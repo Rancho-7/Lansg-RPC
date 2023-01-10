@@ -1,13 +1,18 @@
 package com.lansg.rpc.transport;
 
+import com.lansg.rpc.entity.RpcResponseBean;
 import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.entity.RpcRequestBean;
+import com.lansg.rpc.transport.netty.client.NettyClient;
+import com.lansg.rpc.transport.socket.client.SocketClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 public class RpcConsumerProxy implements InvocationHandler {
@@ -31,6 +36,7 @@ public class RpcConsumerProxy implements InvocationHandler {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         log.info("调用方法: {}#{}", method.getDeclaringClass().getName(), method.getName());
@@ -44,6 +50,20 @@ public class RpcConsumerProxy implements InvocationHandler {
 //        return rpcConsumer.sendRequest(rpcRequest, host, port);
         RpcRequestBean rpcRequest = new RpcRequestBean(UUID.randomUUID().toString(),method.getDeclaringClass().getName(),
                 method.getName(),args,method.getParameterTypes(),false);
-        return client.sendRequest(rpcRequest);
+        Object result = null;
+        if (client instanceof NettyClient){
+            CompletableFuture<RpcResponseBean> completableFuture = (CompletableFuture<RpcResponseBean>) client.sendRequest(rpcRequest);
+            try {
+                result = completableFuture.get().getData();
+            }catch (InterruptedException | ExecutionException e){
+                log.error("方法调用请求发送失败",e);
+                return null;
+            }
+        }
+        if (client instanceof SocketClient){
+            RpcResponseBean rpcResponse = (RpcResponseBean) client.sendRequest(rpcRequest);
+            result = rpcResponse.getData();
+        }
+        return result;
     }
 }
