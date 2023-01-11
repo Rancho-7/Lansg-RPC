@@ -5,6 +5,7 @@ import com.lansg.rpc.transport.RpcConsumer;
 import com.lansg.rpc.entity.RpcRequestBean;
 import com.lansg.rpc.transport.netty.client.NettyClient;
 import com.lansg.rpc.transport.socket.client.SocketClient;
+import com.lansg.rpc.util.RpcMessageChecker;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
@@ -50,20 +51,24 @@ public class RpcConsumerProxy implements InvocationHandler {
 //        return rpcConsumer.sendRequest(rpcRequest, host, port);
         RpcRequestBean rpcRequest = new RpcRequestBean(UUID.randomUUID().toString(),method.getDeclaringClass().getName(),
                 method.getName(),args,method.getParameterTypes(),false);
-        Object result = null;
+//        Object result = null;
+        RpcResponseBean rpcResponse = null;
         if (client instanceof NettyClient){
             CompletableFuture<RpcResponseBean> completableFuture = (CompletableFuture<RpcResponseBean>) client.sendRequest(rpcRequest);
             try {
-                result = completableFuture.get().getData();
+//                result = completableFuture.get().getData();
+                rpcResponse = completableFuture.get();
             }catch (InterruptedException | ExecutionException e){
                 log.error("方法调用请求发送失败",e);
                 return null;
             }
         }
         if (client instanceof SocketClient){
-            RpcResponseBean rpcResponse = (RpcResponseBean) client.sendRequest(rpcRequest);
-            result = rpcResponse.getData();
+//            RpcResponseBean rpcResponse = (RpcResponseBean) client.sendRequest(rpcRequest);
+//            result = rpcResponse.getData();
+            rpcResponse = (RpcResponseBean) client.sendRequest(rpcRequest);
         }
-        return result;
+        RpcMessageChecker.check(rpcRequest,rpcResponse);
+        return rpcResponse.getData();
     }
 }

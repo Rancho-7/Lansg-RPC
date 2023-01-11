@@ -17,9 +17,13 @@ public class SocketTestClient {
         HelloService helloService = proxy.getProxy(HelloService.class);
 //        HelloService2 helloService2 = proxy.getProxy(HelloService2.class);
         HelloObject object = new HelloObject(12, "This is a message");
-        String res1 = helloService.hello(object);
+//        String res1 = helloService.hello(object);
 //        String res2 = helloService2.hello(object,666);
-        System.out.println(res1);
+//        System.out.println(res1);
 //        System.out.println(res2);
+        for (int i=0;i<20;i++){
+            String res=helloService.hello(object);
+            System.out.println(res);
+        }
     }
 }

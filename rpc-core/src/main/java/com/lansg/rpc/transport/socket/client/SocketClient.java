@@ -1,5 +1,7 @@
 package com.lansg.rpc.transport.socket.client;
 
+import com.lansg.rpc.loadbalancer.LoadBalancer;
+import com.lansg.rpc.loadbalancer.RandomLoadBalancer;
 import com.lansg.rpc.registry.NacosServiceDiscovery;
 import com.lansg.rpc.registry.NacosServiceRegistry;
 import com.lansg.rpc.registry.ServiceDiscovery;
@@ -33,11 +35,19 @@ public class SocketClient implements RpcConsumer {
     private final CommonSerializer serializer;
 
     public SocketClient(){
-        this(DEFAULT_SERIALIZER);
+        this(DEFAULT_SERIALIZER,new RandomLoadBalancer());
     }
 
     public SocketClient(Integer serializer) {
-        this.serviceDiscovery=new NacosServiceDiscovery();
+        this(serializer,new RandomLoadBalancer());
+    }
+
+    public SocketClient(LoadBalancer loadBalancer){
+        this(DEFAULT_SERIALIZER,loadBalancer);
+    }
+
+    public SocketClient(Integer serializer, LoadBalancer loadBalancer){
+        this.serviceDiscovery=new NacosServiceDiscovery(loadBalancer);
         this.serializer=CommonSerializer.getByCode(serializer);
     }
 
